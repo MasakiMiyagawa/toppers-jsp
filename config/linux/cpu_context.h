@@ -47,6 +47,7 @@
 #ifndef _CPU_CONTEXT_H_
 #define _CPU_CONTEXT_H_
 
+#include <stdint.h>
 #include "task.h"
 
 /*
@@ -68,13 +69,24 @@ create_context(TCB *tcb)
  */
 extern void	activate_r(void);
 
+#define JB_PC	5
+#define JB_SP 	4
+#define PTR_MANGLE(var) asm volatile ("xorl %%gs:0x18,%0;"	\
+				"roll $9,%0;"			\
+				:"=r"(var) :"0"(var))
+
 Inline void
 activate_context(TCB *tcb)
 {
-    ((int *) &(tcb->tskctxb.env))[JB_PC] = (int) activate_r;
-    ((int *) &(tcb->tskctxb.env))[JB_SP] = (int)(((VB *) tcb->tinib->stk) +
-                                                 tcb->tinib->stksz
-                                                 - STACK_MERGIN);
+	intptr_t pc;
+	intptr_t sp;
+	
+	pc = (intptr_t) activate_r;
+	sp = (int)(((VB *) tcb->tinib->stk) + tcb->tinib->stksz - STACK_MERGIN);
+	PTR_MANGLE(pc);
+	PTR_MANGLE(sp);
+	((int *) &(tcb->tskctxb.env))[JB_PC] = (int)pc;
+	((int *) &(tcb->tskctxb.env))[JB_SP] = (int)sp;
 }
 
 /*
