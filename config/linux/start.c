@@ -40,6 +40,39 @@
 #include "jsp_kernel.h"
 #include "check.h"
 
+#define	ATEXIT_MAX	(32 + 1)
+
+static void (*atexit_table[ATEXIT_MAX])(void);
+static int atexit_num;
+
+int atexit(void (*func)(void))
+{
+	int result = -1;
+	int sync = iniflg;
+
+	if (sync)
+		loc_cpu();
+
+	if (atexit_num < ATEXIT_MAX)
+	{
+		atexit_table[atexit_num++] = func;
+		result = 0;
+	}
+
+	if (sync)
+		unl_cpu();
+
+	return result;
+}
+
+void software_term_hook(void)
+{
+	int i;
+
+	for (i = atexit_num - 1; i >= 0; i--)
+		(*atexit_table[i])();
+}
+
 extern void kernel_start();
 
 
