@@ -37,7 +37,7 @@
 #  @(#) $Id: configure,v 1.13 2003/12/06 06:16:16 hiro Exp $
 # 
 
-require "getopt.pl";
+use Getopt::Std;
 
 #  オプションの定義
 #
@@ -68,7 +68,7 @@ require "getopt.pl";
 #
 #  オプションの処理
 #
-do Getopt("CSTAULDPpld");
+getopt("CSTAULDPpld");
 unless ($opt_C) {
 	print STDERR "configure: -C option is mandatory\n";
 	exit(1);
@@ -81,7 +81,7 @@ $uname = $opt_A ? $opt_A : "sample1";
 $utask = $opt_U ? $opt_U : "";
 $kernel_lib = $opt_L ? $opt_L : "";
 $prefix = $opt_P ? $opt_P : "/usr/local";
-$perl = opt_p ? $opt_p : do get_path("perl", ("/usr/local/bin", "/usr/bin"));
+$perl = opt_p ? $opt_p : get_path("perl", ("/usr/local/bin", "/usr/bin"));
 $lang = $opt_l ? $opt_l : "";
 $templatedir = $opt_d ? $opt_d : "sample";
 
@@ -92,7 +92,7 @@ sub get_objext {
 	local(@uname);
 
 	use POSIX;
-	@uname = do uname();
+	@uname = uname();
 	if ($uname[0] =~ /^cygwin/i) {
 		return("exe");
 	}
@@ -160,26 +160,26 @@ sub generate {
 	if ($sys) {
 		$path = $sampledir.$file.".".$cpu."-".$sys;
 		if (-f $path) {
-			do convert($path, $file);
+			convert($path, $file);
 			return;
 		}
 
 		$path = $sampledir.$file.".".$sys;
 		if (-f $path) {
-			do convert($path, $file);
+			convert($path, $file);
 			return;
 		}
 	}	
 
 	$path = $sampledir.$file.".".$cpu;
 	if (-f $path) {
-		do convert($path, $file);
+		convert($path, $file);
 		return;
 	}	
 
 	$path = $sampledir.$file;
 	if ($mandatory || -f $path) {
-		do convert($path, $file);
+		convert($path, $file);
 	}	
 }
 
@@ -221,7 +221,7 @@ $vartable{"KERNEL_LIB"} = $kernel_lib;
 $vartable{"SRCDIR"} = $srcdir;
 $vartable{"SRCABSDIR"} = $srcabsdir;
 $vartable{"PREFIX"} = $prefix;
-$vartable{"OBJEXT"} = do get_objext();
+$vartable{"OBJEXT"} = get_objext();
 $vartable{"PERL"} = $perl;
 $vartable{"LANG"} = $lang;
 
@@ -250,8 +250,8 @@ if ($tool && $sys && ! -d $srcdir."/config/".$cpu."-".$tool."/".$sys) {
 #  Makefile とアプリケーションファイルの生成
 #
 
-do generate("Makefile", 1);
-do generate($uname.".c", 0);
-do generate($uname.".cpp", 0);
-do generate($uname.".h", 0);
-do generate($uname.".cfg", 0);
+generate("Makefile", 1);
+generate($uname.".c", 0);
+generate($uname.".cpp", 0);
+generate($uname.".h", 0);
+generate($uname.".cfg", 0);
