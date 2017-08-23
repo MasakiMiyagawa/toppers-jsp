@@ -51,59 +51,6 @@
 #include <irc.h>
 #include <irc_inline.h>
 
-#ifndef SYS_PUTC_PORTID
-#define SYS_PUTC_PORTID 1
-#endif
-
-#if SYS_PUTC_PORTID >= 1
-#include <pcat_com.h>
-#else
-#define VIDEO_ADDRESS 0xb8000
-#define VIDEO_ATTRIBUTE 7
-#define VIDEO_X_SIZE 80
-#define VIDEO_Y_SIZE 25
-UB video_x;
-UB video_y;
-Inline void video_write(UB x, UB y, char c) {
-	sil_wrb_mem((VP)(VIDEO_ADDRESS + (VIDEO_X_SIZE * y + x) * 2), c);
-	sil_wrb_mem((VP)(VIDEO_ADDRESS + (VIDEO_X_SIZE * y + x) * 2 + 1), VIDEO_ATTRIBUTE);
-}
-void video_init(void) {
-	UB y;
-	for (y = 0; y < VIDEO_Y_SIZE; ++y) {
-		UB x;
-		for (x = 0; x < VIDEO_X_SIZE; ++x) {
-			video_write(x, y, ' ');
-		}
-	}
-}
-void video_putc(char c) {
-	switch (c) {
-	case '\n':
-		video_x = VIDEO_X_SIZE;
-		break;
-	case '\r':
-		video_x = 0;
-		break;
-	default:
-		video_write(video_x, video_y, c);
-		++video_x;
-		break;
-	}
-	if (video_x >= VIDEO_X_SIZE) {
-		UB x;
-		video_x = 0;
-		++video_y;
-		if (video_y >= VIDEO_Y_SIZE) {
-			video_y = 0;
-		}
-		for (x = 0; x < VIDEO_X_SIZE; ++x) {
-			video_write(x, video_y, ' ');
-		}
-	}
-}
-#endif
-
 FP int_table[0x10]; /* 割込みハンドラのテーブル */
 
 /*
@@ -130,11 +77,6 @@ sys_initialize()
 	set_gate_descriptor(0x2f, 0x8, interrupt15, I386_TYPE_GATE_INTR, 0);
 
 	irc_initialize();
-#if SYS_PUTC_PORTID >= 1
-	pcat_com_init(SYS_PUTC_PORTID);
-#else
-	video_init();
-#endif
 }
 
 /*
