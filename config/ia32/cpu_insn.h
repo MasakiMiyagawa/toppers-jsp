@@ -53,6 +53,50 @@ Inline void enaint(void) {
 	Asm("sti");
 }
 
+Inline void write_msr(UW msr, UW low, UW high)
+{
+	asm volatile("wrmsr"
+		:
+		: "c" (msr), "a" (low), "d" (high)
+		: "memory");
+}
+
+Inline void read_msr(UW msr, UW *low, UW *high)
+{
+	UW _low = 0;
+	UW _high = 0;
+	
+	asm volatile("rdmsr"
+		: "=a" (_low), "=d" (_high)
+		: "c" (msr));
+
+	*low = _low;
+	*high = _high;
+}
+
+Inline UD rdtsc(void)
+{
+	UD ret = 0;
+	asm volatile("rdtsc" : "=A" (ret));
+	return ret;
+}
+
+Inline void cpuid(UW *eax, UW *ebx, UW *ecx, UW *edx)
+{
+	UW _eax, _ebx, _ecx, _edx;
+
+	_eax = *eax;
+
+	asm volatile("cpuid"
+		: "=a" (_eax), "=b" (_ebx), "=c" (_ecx), "=d" (_edx)
+		: "a" (_eax));
+
+	*eax = _eax;
+	*ebx = _ebx;
+	*ecx = _ecx;
+	*edx = _edx;	
+}
+
 #endif /* _MACRO_ONLY */
 
 #endif	/* _CPU_INSN_H_ */
