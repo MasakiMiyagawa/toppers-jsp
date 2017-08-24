@@ -67,7 +67,7 @@ void lapic_timer_init(UW vector)
 	write_msr(MSR_X2APIC_TDCR, 0x3, 0); 
 	count_per_ms = lapic_estimate_count_per_ms();
 	write_msr(MSR_X2APIC_LVTT, vector|APIC_PERIODIC, 0);
-	write_msr(MSR_X2APIC_TMICT, count_per_ms, 0);
+	write_msr(MSR_X2APIC_TMICT, (count_per_ms * TIC_NUME / TIC_DENO), 0);
 	syslog(LOG_NOTICE, "Starting Local APIC Timer.");
 }
 
