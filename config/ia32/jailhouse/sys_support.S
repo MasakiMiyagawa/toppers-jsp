@@ -86,13 +86,8 @@ interrupt_2:
 	CALL_HANDLER(*%eax)
 0:
 	popl %eax /* intno */
-	testb $8, %al
-	jz 1f
-	movb $0x20, %al
-	outb %al, $0xa0 /* slave non-specific EOI */
-1:
-	movb $0x20, %al
-	outb %al, $0x20 /* master non-specific EOI */
+	/* In the case of Local APIC, EOI is invoked at lapic_eoi */
+	call lapic_eoi
 	cmpl	$0, nest
 	jne	interrupt_3
 	popl %eax
