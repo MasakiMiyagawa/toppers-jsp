@@ -2,7 +2,7 @@
 
 /* Common Region Access */
 #define COMM_REGION_BASE  0x300000
-struct jailhouse_comm_region {
+static struct jailhouse_comm_region {
 	UW msg_to_cell;
 #define JAILHOUSE_MSG_SHUTDOWN_REQUEST	1
 	UW reply_from_cell;
@@ -10,6 +10,7 @@ struct jailhouse_comm_region {
 #define JAILHOUSE_CELL_SHUT_DOWN	2
 	UW padding;
 	UH pm_timer_address;
+#define PM_TIMER_HZ		3579545
 	UH num_cpus;
 } *comm_region;
 
@@ -26,12 +27,17 @@ void jailhouse_handle_shutdown(void)
 	}
 }
 
-UW pm_timer_read(void)
+UD pm_timer_read_us(void)
 {
 	UH port = comm_region->pm_timer_address;
 	UW val = 0;
+	UD us = 0;
+
 	asm volatile("inl %1,%0" : "=a" (val) : "dN" (port));
-	return val;
+	us = (UD)val;
+	us = us * (1000 * 1000) / PM_TIMER_HZ;
+
+	return us;
 }
 
 /* Hypercall */
