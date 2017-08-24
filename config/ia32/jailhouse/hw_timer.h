@@ -66,13 +66,7 @@
 Inline void
 hw_timer_initialize()
 {
-  	static const int count = (UD)14318180 * TIC_NUME / 12 / 1000 / TIC_DENO;
-	assert(2 <= count && count <= 0x10000);
-	sil_wrb_iop((VP)0x43, 0x34);
-	sil_wrb_iop((VP)0x40, count & 0xff);
-	sil_wrb_iop((VP)0x40, count >> 8);
-
-	irc_ena_irq(TO_INTNO(PIT_INHNO));
+	lapic_timer_init(PIT_INHNO);
 }
 
 /*
@@ -91,7 +85,7 @@ hw_timer_int_clear()
 Inline void
 hw_timer_terminate()
 {
-	irc_dis_irq(TO_INTNO(PIT_INHNO));
+	lapic_timer_disable();
 }
 
 #endif /* _MACRO_ONLY */
