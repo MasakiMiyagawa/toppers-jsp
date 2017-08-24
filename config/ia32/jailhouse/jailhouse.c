@@ -1,5 +1,23 @@
 #include "jsp_kernel.h"
 
+/* Common Region Access */
+#define COMM_REGION_BASE  0x300000
+struct jailhouse_comm_region {
+	UW msg_to_cell;
+	UW reply_from_cell;
+	UW cell_state;
+	UW padding;
+	UH pm_timer_address;
+	UH num_cpus;
+} *comm_region;
+
+void jailhouse_guest_init(void)
+{
+	comm_region = (struct jailhouse_comm_region *)COMM_REGION_BASE;
+	syslog(LOG_NOTICE, "pm_timer_address=0x%hx", 
+				comm_region->pm_timer_address);
+}
+
 /* Hypercall */
 static BOOL jailhouse_use_vmcall = TRUE;
 #define JAILHOUSE_HC_DEBUG_CONSOLE_PUTC	8
@@ -31,4 +49,3 @@ void jailhouse_putc(char c)
 {
 	jailhouse_call_arg1(JAILHOUSE_HC_DEBUG_CONSOLE_PUTC, c);
 }
-

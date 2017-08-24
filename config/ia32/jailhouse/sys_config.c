@@ -76,6 +76,7 @@ sys_initialize()
 	set_gate_descriptor(0x2e, 0x8, interrupt14, I386_TYPE_GATE_INTR, 0);
 	set_gate_descriptor(0x2f, 0x8, interrupt15, I386_TYPE_GATE_INTR, 0);
 
+	jailhouse_guest_init();
 	lapic_enable();
 }
 
