@@ -14,6 +14,35 @@ static struct jailhouse_comm_region {
 	UH num_cpus;
 } *comm_region;
 
+extern UW __bss_start;
+extern UW _kernel_stack;
+extern UW _end;
+void software_init_hook(void)
+{
+	/* to clear bss */
+	char *p = &__bss_start; 
+	char *end_p = &_kernel_stack;
+	UW size = (UW)(end_p - p);
+	UW i;
+
+	while (1) {
+		*p = 0;
+		p++;
+		if (p == end_p)
+			break;
+	}
+
+	p = (end_p + STACKSIZE);
+	end_p = &_end; 
+	while (1) {
+		*p = 0;
+		p++;
+		if (p == end_p)
+			break;
+	}
+
+}
+
 void jailhouse_guest_init(void)
 {
 	comm_region = (struct jailhouse_comm_region *)COMM_REGION_BASE;
