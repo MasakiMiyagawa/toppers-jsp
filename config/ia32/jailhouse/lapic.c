@@ -71,6 +71,11 @@ void lapic_timer_init(UW vector)
 	syslog(LOG_NOTICE, "Starting Local APIC Timer.");
 }
 
+void lapic_timer_disable(void)
+{
+	write_msr(MSR_X2APIC_TMICT, 0, 0);	/* stop timer */
+}
+
 void lapic_enable(void)
 {
 	UW low, high;
