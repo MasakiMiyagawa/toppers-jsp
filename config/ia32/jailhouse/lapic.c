@@ -1,6 +1,15 @@
 #include <s_services.h>
 #include <cpu_insn.h>
 
+/* MSR */
+#define MSR_IA32_APICBASE	0x0000001b
+#define MSR_X2APIC_SPIV 	0x0000080f
+#define MSR_X2APIC_LVTT 	0x00000832
+#define MSR_X2APIC_TMICT	0x00000838
+#define MSR_X2APIC_TMCCT 	0x00000839
+#define MSR_X2APIC_TDCR		0x0000083e
+#define MSR_X2APIC_EOI		0x0000080b
+
 #define APIC_PERIODIC 	(1 << 17)
 #define APIC_BASE_EXTD	(1 << 10)
 #define APIC_BASE_EN	(1 << 11)
