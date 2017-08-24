@@ -14,8 +14,14 @@ struct jailhouse_comm_region {
 void jailhouse_guest_init(void)
 {
 	comm_region = (struct jailhouse_comm_region *)COMM_REGION_BASE;
-	syslog(LOG_NOTICE, "pm_timer_address=0x%hx", 
-				comm_region->pm_timer_address);
+}
+
+UW pm_timer_read(void)
+{
+	UH port = comm_region->pm_timer_address;
+	UW val = 0;
+	asm volatile("inl %1,%0" : "=a" (val) : "dN" (port));
+	return val;
 }
 
 /* Hypercall */
