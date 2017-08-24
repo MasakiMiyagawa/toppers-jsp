@@ -4,8 +4,10 @@
 #define COMM_REGION_BASE  0x300000
 struct jailhouse_comm_region {
 	UW msg_to_cell;
+#define JAILHOUSE_MSG_SHUTDOWN_REQUEST	1
 	UW reply_from_cell;
 	UW cell_state;
+#define JAILHOUSE_CELL_SHUT_DOWN	2
 	UW padding;
 	UH pm_timer_address;
 	UH num_cpus;
@@ -14,6 +16,14 @@ struct jailhouse_comm_region {
 void jailhouse_guest_init(void)
 {
 	comm_region = (struct jailhouse_comm_region *)COMM_REGION_BASE;
+}
+
+void jailhouse_handle_shutdown(void)
+{
+	if (comm_region->msg_to_cell == JAILHOUSE_MSG_SHUTDOWN_REQUEST) {
+		comm_region->cell_state = JAILHOUSE_CELL_SHUT_DOWN;
+		while (1);
+	}
 }
 
 UW pm_timer_read(void)

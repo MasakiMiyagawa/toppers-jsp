@@ -68,7 +68,15 @@ typedef	UINT INTNO; /* 割込み番号 */
 Inline void
 kernel_abort()
 {
-	while(1);
+	while (1) {
+		jailhouse_handle_shutdown();
+	}
+}
+
+Inline void jailhouse_park(void)
+{
+	/* Jailhouse will park JSP. */
+	asm volatile("outb %al, $0x20");
 }
 
 typedef struct t_dinh {
