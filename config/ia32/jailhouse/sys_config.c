@@ -106,11 +106,11 @@ ER irc_dis_irq(UB irq)
 
 	if(irq < 8)
 	{
-		sil_wrb_iop((VP)0x21, sil_reb_iop((VP)0x21) | (1 << irq));
+		//sil_wrb_iop((VP)0x21, sil_reb_iop((VP)0x21) | (1 << irq));
 	}
 	else
 	{
-		sil_wrb_iop((VP)0xA1, sil_reb_iop((VP)0xA1) | (1 << (irq - 8)));
+		//sil_wrb_iop((VP)0xA1, sil_reb_iop((VP)0xA1) | (1 << (irq - 8)));
 	}
 
 	if(!cpu_locked)
@@ -138,11 +138,11 @@ ER irc_ena_irq(UB irq)
 
 	if(irq < 8)
 	{
-		sil_wrb_iop((VP)0x21, sil_reb_iop((VP)0x21) & ~(1 << irq));
+		//sil_wrb_iop((VP)0x21, sil_reb_iop((VP)0x21) & ~(1 << irq));
 	}
 	else
 	{
-		sil_wrb_iop((VP)0xA1, sil_reb_iop((VP)0xA1) & ~(1 << (irq - 8)));
+		//sil_wrb_iop((VP)0xA1, sil_reb_iop((VP)0xA1) & ~(1 << (irq - 8)));
 	}
 
 	if(!cpu_locked)
